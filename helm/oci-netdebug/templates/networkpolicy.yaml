@@ -1,0 +1,18 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Values.networkPolicy.name | quote }}
+  namespace: {{ .Values.namespace.name | quote }}
+spec:
+  podSelector:
+    matchLabels:
+{{ toYaml .Values.podLabels | indent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+{{ toYaml .Values.networkPolicy.allowedPodLabels | indent 14 }}
+{{- end }}

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+{{ toYaml .Values.podLabels | indent 4 }}
+  name: {{ .Values.deployment.name | quote }}
+  namespace: {{ .Values.namespace.name | quote }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+{{ toYaml .Values.podLabels | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ toYaml .Values.podLabels | indent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.deployment.name | quote }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          resources:
+{{ toYaml .Values.resources | indent 12 }}

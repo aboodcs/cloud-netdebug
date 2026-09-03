@@ -1,0 +1,31 @@
+namespace:
+  name: netdebug
+  create: true
+
+deployment:
+  name: netdebug-app
+
+replicaCount: 2
+
+image:
+  repository: nginx
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: netdebug-service
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+podLabels:
+  app: netdebug-app
+
+networkPolicy:
+  enabled: true
+  name: allow-approved-client
+
+  allowedPodLabels:
+    access: allowed
+
+resources: {}

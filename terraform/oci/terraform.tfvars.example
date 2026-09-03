@@ -1,0 +1,14 @@
+# Copy this file to terraform.tfvars and replace every placeholder.
+# terraform.tfvars is ignored because these values identify your OCI account
+# and local authentication material.
+
+tenancy_ocid      = "REPLACE_WITH_YOUR_TENANCY_OCID"
+user_ocid         = "REPLACE_WITH_YOUR_USER_OCID"
+fingerprint       = "REPLACE_WITH_YOUR_API_KEY_FINGERPRINT"
+private_key_path  = "/absolute/path/to/your/oci-api-private-key.pem"
+compartment_id    = "REPLACE_WITH_YOUR_COMPARTMENT_OCID"
+allowed_ssh_cidr  = "REPLACE_WITH_YOUR_PUBLIC_IP/32"
+ssh_public_key_path = "/absolute/path/to/your/ssh-public-key.pub"
+
+# Optional override:
+# region = "me-jeddah-1"

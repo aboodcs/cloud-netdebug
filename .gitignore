@@ -1,0 +1,33 @@
+# Terraform working directories and runtime state
+**/.terraform/*
+terraform/*/netpath-output/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+
+# Local Terraform inputs may contain account identifiers and credentials
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+
+# Local Terraform CLI configuration and override files
+.terraformrc
+terraform.rc
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Credentials, private keys, and environment files
+*.pem
+*.key
+.env
+.env.*
+
+# Editor and operating-system files
+.DS_Store
+.idea/
+.vscode/
+*.swp

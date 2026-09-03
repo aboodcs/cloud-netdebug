@@ -1,8 +1,8 @@
-# OCI NetDebug — Project Tasks
+# Multi-Cloud NetDebug — Project Tasks
 
-Hands-on OCI, Linux, Kubernetes, and Helm networking troubleshooting project.
+Hands-on AWS, OCI, Linux, Kubernetes, and Helm networking troubleshooting project.
 
-The project begins with a known-good Oracle Cloud Infrastructure network and gradually introduces realistic failures.
+The project begins with known-good cloud networks implemented separately in AWS and Oracle Cloud Infrastructure (OCI), then gradually introduces realistic failures.
 
 The main rule of the project:
 
@@ -14,17 +14,17 @@ The main rule of the project:
 
 ## Task 0.1 — Design the architecture
 
-* [ ] Draw the complete OCI architecture
+* [ ] Draw the complete AWS and OCI architectures
 * [ ] Include your laptop
-* [ ] Include the OCI VCN
+* [ ] Include the cloud network: AWS VPC / OCI VCN
 * [ ] Include public and private subnets
 * [ ] Include `admin-01`
 * [ ] Include `target-01`
-* [ ] Include Internet Gateway
-* [ ] Include NAT Gateway
-* [ ] Include Service Gateway
-* [ ] Include route tables
-* [ ] Include NSGs
+* [ ] Include the provider's Internet Gateway
+* [ ] Include the provider's NAT Gateway
+* [ ] Include the OCI Service Gateway in the OCI architecture
+* [ ] Include AWS / OCI route tables
+* [ ] Include AWS Security Groups / OCI NSGs
 * [ ] Show expected traffic paths
 
 Save:
@@ -42,7 +42,7 @@ Save:
 
 ## Task 0.2 — Design the IP addressing plan
 
-* [ ] Choose VCN CIDR
+* [ ] Choose the cloud-network CIDR: AWS VPC / OCI VCN
 * [ ] Choose public subnet CIDR
 * [ ] Choose private subnet CIDR
 * [ ] Verify that subnet CIDRs do not overlap
@@ -63,7 +63,7 @@ Define expected behavior for:
 * [ ] admin-01 → target-01
 * [ ] target-01 → admin-01
 * [ ] target-01 → Internet
-* [ ] target-01 → OCI services
+* [ ] target-01 → provider services, using the path actually implemented by each provider
 * [ ] Internet → target-01
 
 For each path document:
@@ -87,40 +87,41 @@ Save:
 
 Files:
 
-* `terraform/versions.tf`
-* `terraform/providers.tf`
-* `terraform/variables.tf`
+* `terraform/aws/providers.tf`
+* `terraform/aws/variables.tf`
+* `terraform/oci/providers.tf`
+* `terraform/oci/variables.tf`
 
 Requirements:
 
 * [ ] Define Terraform version requirements
-* [ ] Configure OCI provider
+* [ ] Configure the AWS and OCI providers in their separate directories
 * [ ] Define reusable variables
 * [ ] Keep credentials outside Git
 * [ ] Verify Terraform can initialize successfully
 
 ### Definition of Done
 
-Terraform is ready to manage OCI infrastructure, but no infrastructure needs to exist yet.
+Terraform is ready to manage either provider implementation, but no infrastructure needs to exist yet.
 
 ---
 
-## Task 1.2 — Create the VCN
+## Task 1.2 — Create the cloud network
 
 File:
 
-`terraform/network.tf`
+`terraform/<provider>/network.tf`
 
-* [ ] Create the VCN
+* [ ] Create the AWS VPC and OCI VCN in their respective implementations
 * [ ] Use the CIDR from your addressing plan
 * [ ] Configure required DNS behavior
 * [ ] Apply meaningful names/tags
 
 ### You should understand
 
-* What a VCN represents
+* What a cloud network represents and how AWS VPC and OCI VCN terminology maps
 * Why CIDR planning matters
-* How OCI DNS relates to a VCN
+* How provider DNS behavior relates to an AWS VPC or OCI VCN
 
 ---
 
@@ -136,16 +137,16 @@ File:
 
 * [ ] Create the subnet for `target-01`
 * [ ] Keep direct Internet exposure disabled
-* [ ] Support internal VCN communication
+* [ ] Support internal cloud-network communication
 * [ ] Prepare it for outbound connectivity
 
 ---
 
-# Phase 2 — OCI Routing & Gateways
+# Phase 2 — Cloud Routing & Gateways
 
 ## Task 2.1 — Create the Internet Gateway
 
-* [ ] Create an Internet Gateway
+* [ ] Create an Internet Gateway in each provider implementation
 * [ ] Connect the public network path correctly
 * [ ] Understand which traffic should use it
 
@@ -169,7 +170,7 @@ Goal:
 
 Allow `target-01` to initiate outbound Internet connections without giving it a public IP.
 
-* [ ] Create the NAT Gateway
+* [ ] Create the provider's NAT Gateway
 * [ ] Determine which route must use it
 * [ ] Keep inbound Internet exposure disabled
 
@@ -187,7 +188,9 @@ Allow `target-01` to initiate outbound Internet connections without giving it a 
 
 ---
 
-## Task 2.5 — Configure the Service Gateway
+## Task 2.5 — Configure the OCI Service Gateway
+
+This task is OCI-specific. The current AWS implementation does not define VPC endpoints; access to public AWS service endpoints follows the configured NAT path. AWS gateway or interface VPC endpoints may provide private service access for supported services, but they are service-specific and are not a direct equivalent to one OCI Service Gateway.
 
 * [ ] Create the Service Gateway
 * [ ] Determine which OCI service traffic should use it
@@ -200,7 +203,7 @@ NAT Gateway vs Service Gateway.
 
 ---
 
-# Phase 3 — OCI Security
+# Phase 3 — Cloud Network Security
 
 ## Task 3.1 — Design security requirements
 
@@ -211,28 +214,29 @@ Consider:
 * [ ] Laptop → admin-01
 * [ ] admin-01 → target-01
 * [ ] target-01 → Internet
-* [ ] target-01 → OCI services
+* [ ] target-01 → provider services
 * [ ] target-01 → admin-01
 
 Do not solve everything using unrestricted rules.
 
 ---
 
-## Task 3.2 — Create Network Security Groups
+## Task 3.2 — Create network security controls
 
 File:
 
-`terraform/security.tf`
+`terraform/<provider>/security.tf`
 
 * [ ] Create security policy for `admin-01`
 * [ ] Create security policy for `target-01`
+* [ ] Use AWS Security Groups or OCI Network Security Groups in the corresponding implementation
 * [ ] Restrict administrative access
 * [ ] Configure only required protocols and ports
 * [ ] Configure required egress rules
 
 ---
 
-## Task 3.3 — Understand OCI security rules
+## Task 3.3 — Understand provider security rules
 
 Before continuing, explain:
 
@@ -244,6 +248,8 @@ Before continuing, explain:
 * port
 * stateful vs stateless behavior
 
+Account for the provider difference: AWS Security Groups are stateful, while OCI NSG rules can be configured as stateful or stateless.
+
 ---
 
 # Phase 4 — Compute
@@ -252,7 +258,7 @@ Before continuing, explain:
 
 File:
 
-`terraform/compute.tf`
+`terraform/<provider>/compute.tf`
 
 Requirements:
 
@@ -261,7 +267,7 @@ Requirements:
 * [ ] Private IP
 * [ ] Required public connectivity
 * [ ] SSH administration
-* [ ] Correct NSG association
+* [ ] Correct AWS Security Group / OCI NSG association
 
 ---
 
@@ -274,7 +280,7 @@ Requirements:
 * [ ] Private IP only
 * [ ] No direct public exposure
 * [ ] Reachable from `admin-01`
-* [ ] Correct NSG association
+* [ ] Correct AWS Security Group / OCI NSG association
 
 ---
 
@@ -282,7 +288,7 @@ Requirements:
 
 File:
 
-`terraform/outputs.tf`
+`terraform/<provider>/outputs.tf`
 
 Output useful operational information.
 
@@ -325,7 +331,7 @@ Investigate:
 
 Understand the complete path:
 
-Laptop/admin → OCI network → security rules → Linux → SSH service
+Laptop/admin → cloud network → provider security rules → Linux → SSH service
 
 ---
 
@@ -405,7 +411,9 @@ This must test DNS separately from basic connectivity.
 
 Verify:
 
-target-01 → OCI service
+target-01 → provider service endpoint
+
+The expected path is provider-specific: the OCI implementation includes a Service Gateway path, while the current AWS implementation uses its configured NAT path and does not define VPC endpoints.
 
 ---
 
@@ -440,7 +448,7 @@ Your investigation should consider:
 2. Subnet
 3. Route table
 4. Gateway
-5. OCI security
+5. Provider security controls
 6. Linux interface
 7. Linux routing
 8. DNS
@@ -478,7 +486,7 @@ Your mission:
 
 Determine which layer caused the failure.
 
-Do not randomly modify OCI rules.
+Do not randomly modify provider security rules.
 
 Document:
 
@@ -526,7 +534,9 @@ Document:
 
 # Phase 11 — Mystery 4
 
-## OCI service works, Internet fails
+## OCI service works, Internet fails (OCI-specific)
+
+This mystery intentionally tests OCI Service Gateway behavior and has no forced AWS equivalent in this repository.
 
 Situation:
 
@@ -547,13 +557,13 @@ Document:
 
 ## Port allowed, service unavailable
 
-OCI networking appears correct.
+Cloud networking appears correct.
 
 The destination port still does not provide the expected response.
 
 Determine whether the problem exists in:
 
-* OCI
+* AWS/OCI network controls
 * Linux networking
 * Linux firewall
 * service/process
@@ -609,7 +619,7 @@ Document:
 
 ## Terraform drift
 
-Create one controlled manual OCI configuration change.
+Create one controlled manual cloud configuration change in the provider implementation being tested.
 
 Then:
 
@@ -640,7 +650,7 @@ Compare:
 * network path
 * routing
 * public/private exposure
-* NSGs
+* AWS Security Groups / OCI NSGs
 * protocol
 
 Document:
@@ -651,7 +661,7 @@ Document:
 
 # Phase 17 — Kubernetes Networking Extension
 
-Do this only after the OCI/Linux mysteries work.
+Do this only after the cloud/Linux mysteries work.
 
 ## Task 17.1 — Prepare Kubernetes environment
 
@@ -802,11 +812,11 @@ Your mission is to determine:
 
 # Phase 19 — Cross-Layer Troubleshooting
 
-## Task 19.1 — OCI vs Kubernetes failure
+## Task 19.1 — Cloud infrastructure vs Kubernetes failure
 
 Create a failure where the symptom could plausibly come from:
 
-* OCI networking
+* AWS or OCI networking
 * Kubernetes networking
 
 Determine which layer actually owns the problem.
@@ -858,10 +868,10 @@ No layer is provided.
 
 You must determine whether the problem exists in:
 
-* OCI Compute
-* OCI routing
+* AWS EC2 / OCI Compute
+* AWS / OCI routing
 * gateway configuration
-* OCI NSG/security
+* AWS Security Group / OCI NSG security
 * Linux networking
 * DNS
 * Linux service
@@ -894,8 +904,8 @@ Update:
 
 Show both:
 
-1. OCI/Linux architecture
-2. Kubernetes/Helm extension
+1. AWS and OCI Linux architectures
+2. Provider-neutral Kubernetes/Helm extension
 
 ---
 
@@ -943,9 +953,28 @@ Finish:
 
 You should be able to explain:
 
+### Cloud infrastructure
+
+* shared addressing and subnet design
+* routing and route-table associations
+* public and private traffic paths
+* ingress and egress controls
+
+### AWS
+
+* VPC
+* EC2
+* public/private subnet
+* Internet Gateway
+* NAT Gateway
+* route tables
+* Security Groups
+* VPC DNS behavior
+
 ### OCI
 
 * VCN
+* Compute instances
 * public/private subnet
 * Internet Gateway
 * NAT Gateway
@@ -1015,13 +1044,13 @@ Architecture
      ↓
 Terraform
      ↓
-OCI Networking
+AWS / OCI Networking
      ↓
 Linux
      ↓
 Known-Good Baseline
      ↓
-OCI/Linux Mysteries
+Cloud/Linux Mysteries
      ↓
 Kubernetes Networking
      ↓
@@ -1039,6 +1068,7 @@ Documentation
 Core:
 
 * Oracle Cloud Infrastructure
+* Amazon Web Services
 * Terraform
 * Linux
 * Networking
@@ -1074,4 +1104,3 @@ Verify
    ↓
 Document
 ```
-
