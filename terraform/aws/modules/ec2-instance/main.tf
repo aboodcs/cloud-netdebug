@@ -6,7 +6,10 @@ resource "aws_instance" "this" {
   key_name                    = var.key_name
   associate_public_ip_address = var.associate_public_ip_address
 
-  tags = {
-    Name = var.name
-  }
+  tags = merge(
+    var.tags,
+    {
+      Name = var.name
+    }
+  )
 }

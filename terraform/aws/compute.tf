@@ -3,7 +3,6 @@ resource "aws_key_pair" "netdebug" {
   public_key = file(var.ssh_public_key_path)
 }
 
-
 module "ec2_instances" {
   source = "./modules/ec2-instance"
 
@@ -16,6 +15,15 @@ module "ec2_instances" {
   security_group_ids          = each.value.security_group_ids
   key_name                    = aws_key_pair.netdebug.key_name
   associate_public_ip_address = each.value.associate_public_ip_address
+
+  tags = {
+    Project       = var.project_name
+    Environment   = var.environment
+    ManagedBy     = var.managed_by
+    CloudProvider = var.cloud_provider
+    AutoDestroy   = "true"
+    Role          = "admin"
+  }
 }
 
 moved {

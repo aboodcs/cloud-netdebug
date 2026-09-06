@@ -1,14 +1,26 @@
-output "admin_public_ip" {
-  description = "Public IP address of admin-01"
-  value       = module.ec2_instances["admin-01"].public_ip
+output "instance_ids" {
+  description = "EC2 instance IDs by instance name"
+
+  value = {
+    for name, instance in module.ec2_instances :
+    name => instance.instance_id
+  }
 }
 
-output "admin_private_ip" {
-  description = "Private IP address of admin-01"
-  value       = module.ec2_instances["admin-01"].private_ip
+output "private_ips" {
+  description = "Private IP addresses by instance name"
+
+  value = {
+    for name, instance in module.ec2_instances :
+    name => instance.private_ip
+  }
 }
 
-output "target_private_ip" {
-  description = "Private IP address of target-01"
-  value       = module.ec2_instances["target-01"].private_ip
+output "public_ips" {
+  description = "Public IP addresses by instance name"
+
+  value = {
+    for name, instance in module.ec2_instances :
+    name => instance.public_ip
+  }
 }
