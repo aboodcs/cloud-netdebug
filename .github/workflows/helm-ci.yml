@@ -1,0 +1,58 @@
+name: helm-ci
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "helm/**"
+      - ".github/workflows/helm-ci.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "helm/**"
+      - ".github/workflows/helm-ci.yml"
+
+jobs:
+  helm-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
+      - name: Lint Helm chart
+        run: helm lint ./helm
+
+      - name: Render default Helm chart
+        run: helm template netdebug ./helm
+
+      - name: Render dev Helm chart
+        run: helm template netdebug ./helm -f ./helm/values-dev.yaml
+
+  package:
+    needs: helm-ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
+      - name: Package Helm chart
+        run: |
+          mkdir -p ./helm-packages
+          helm package ./helm --destination ./helm-packages
+
+      - name: Upload Helm package
+        uses: actions/upload-artifact@v4
+        with:
+          name: helm-packages
+          path: ./helm-packages/*.tgz
