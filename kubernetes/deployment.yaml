@@ -10,7 +10,6 @@ spec:
   selector:
     matchLabels:
       app: netdebug-app
-  strategy: {}
   template:
     metadata:
       labels:
@@ -19,5 +18,4 @@ spec:
       containers:
       - image: nginx:latest
         name: nginx
-        resources: {}
-status: {}
+

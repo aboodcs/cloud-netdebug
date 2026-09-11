@@ -9,14 +9,34 @@ replicaCount: 2
 
 image:
   repository: nginx
-  tag: latest
+  digest: "sha256:bc5eac5eafc581aeda3008b4b1f07ebba230de2f27d47767129a6a905c84f470"
   pullPolicy: IfNotPresent
+
+containerPort: 80
 
 service:
   name: netdebug-service
   type: ClusterIP
   port: 80
   targetPort: 80
+
+resourceRequests:
+  cpu: 100m
+  memory: 128Mi
+
+resourceLimits:
+  cpu: 250m
+  memory: 256Mi
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 80
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 80
 
 podLabels:
   app: netdebug-app
@@ -27,5 +47,3 @@ networkPolicy:
 
   allowedPodLabels:
     access: allowed
-
-resources: {}

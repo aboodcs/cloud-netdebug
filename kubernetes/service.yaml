@@ -14,5 +14,3 @@ spec:
   selector:
     app: netdebug-app
   type: ClusterIP
-status:
-  loadBalancer: {}
