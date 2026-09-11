@@ -1,2 +1,0 @@
-NAME               TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
-netdebug-service   ClusterIP   10.107.175.5   <none>        80/TCP    50s

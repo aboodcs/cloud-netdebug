@@ -1,3 +1,0 @@
-NAME                            READY   STATUS    RESTARTS   AGE
-netdebug-app-5df4f4d845-7cr9b   1/1     Running   0          50s
-netdebug-app-5df4f4d845-qzs2t   1/1     Running   0          50s
