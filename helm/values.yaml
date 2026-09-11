@@ -20,13 +20,13 @@ service:
   port: 80
   targetPort: 80
 
-resourceRequests:
-  cpu: 100m
-  memory: 128Mi
-
-resourceLimits:
-  cpu: 250m
-  memory: 256Mi
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
 
 readinessProbe:
   httpGet:
